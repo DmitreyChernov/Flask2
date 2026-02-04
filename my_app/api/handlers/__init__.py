@@ -1,6 +1,10 @@
-from flask import jsonify
+from flask import jsonify, render_template
 from api import app
 from werkzeug.exceptions import HTTPException
+
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 
 @app.errorhandler(HTTPException)
