@@ -1,0 +1,16 @@
+*env/
+*env
+*.env
+.vscode/
+.idea/
+__pycache__/
+*.py[cod]
+db.*
+*.sqlite
+*.sqlite3
+*.tmp
+*.code-workspace
+.DS_Store
+*.db
+*.log
+*.pot
