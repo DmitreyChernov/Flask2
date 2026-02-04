@@ -3,7 +3,9 @@
 from pathlib import Path
 
 # BASE_DIR = Path(__file__).parent
-BASE_DIR = Path(__file__).parent.resolve()
+# BASE_DIR = Path(__file__).parent.resolve()
+# Поднимаемся на уровень выше: из api/ → в my_app/
+BASE_DIR = Path(__file__).parent.parent.resolve()
 
 class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True

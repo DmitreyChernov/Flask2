@@ -11,6 +11,7 @@ class AuthorModel(db.Model):
     __tablename__ = 'authors'
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(32), index=True, unique=True)
+    surname: Mapped[str] = mapped_column(String(32), nullable=True, index=True)
     quotes: Mapped[list["QuoteModel"]] = relationship(back_populates="author", lazy="dynamic")
 
     def to_dict(self):
