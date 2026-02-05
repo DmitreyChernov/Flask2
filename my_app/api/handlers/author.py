@@ -1,6 +1,7 @@
 from flask import jsonify
 from api import app, db
 from api.models.author import AuthorModel
+from api.schemas.author import author_schema, authors_schema
 
 
 
@@ -20,4 +21,10 @@ def get_author_quotes(id):
     au = AuthorModel.query.get_or_404(id)
     quotes = au.quotes.all()
     return jsonify([q.to_dict() for q in quotes])
+
+
+@app.get("/authors")
+def get_authors():
+    authors = db.session.scalars(db.select(AuthorModel)).all()
+    return jsonify(author_schema.dump(authors)), 200
 
