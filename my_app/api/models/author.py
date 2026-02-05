@@ -12,5 +12,9 @@ class AuthorModel(db.Model):
     surname: Mapped[str] = mapped_column(String(32), nullable=True, index=True)
     quotes: Mapped[list["QuoteModel"]] = relationship(lambda: QuoteModel, back_populates="author", lazy="dynamic", cascade="all, delete-orphan")
 
+    def __init__(self, name, surname):
+        self.name = name
+        self.surname = surname
+    
     def to_dict(self):
-        return {"name": self.name, "surname": self.surname}
+        return {"id": self.id, "name": self.name, "surname": self.surname}

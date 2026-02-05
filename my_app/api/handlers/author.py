@@ -26,5 +26,4 @@ def get_author_quotes(id):
 @app.get("/authors")
 def get_authors():
     authors = db.session.scalars(db.select(AuthorModel)).all()
-    return jsonify(author_schema.dump(authors)), 200
-
+    return jsonify(authors_schema.dump(authors)), 200
