@@ -1,8 +1,9 @@
+# my_app/api/handlers/author.py
+
 from flask import jsonify
 from api import app, db
 from api.models.author import AuthorModel
-from api.schemas.author import author_schema, authors_schema
-
+from api.schemas.author import authors_schema
 
 
 def get_or_create_author(name: str) -> AuthorModel:
@@ -13,14 +14,8 @@ def get_or_create_author(name: str) -> AuthorModel:
     if author is None:
         author = AuthorModel(name=name)
         db.session.add(author)
+        db.session.flush()
     return author
-
-
-@app.route("/author/<int:id>/quotes")
-def get_author_quotes(id):
-    au = AuthorModel.query.get_or_404(id)
-    quotes = au.quotes.all()
-    return jsonify([q.to_dict() for q in quotes])
 
 
 @app.get("/authors")

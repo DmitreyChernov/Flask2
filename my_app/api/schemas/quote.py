@@ -1,17 +1,16 @@
-from api import ma 
+from api import ma
 from api.models.quote import QuoteModel
 from api.schemas.author import AuthorSchema
 
-
-class QuoteSchema(ma.SQLAlchemySchema):
+class QuoteSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = QuoteModel
-        # load_instance = True
+        load_instance = True
+        include_fk = False
 
-    id = ma.auto_field()
-    text = ma.auto_field()
-    author = ma.Nested(AuthorSchema(only=("id")))
-
+    author = ma.Nested(lambda: AuthorSchema(only=("name", "surname")))
+    rating = ma.auto_field(validate=lambda x: (isinstance(x, int) and 1 <= x <= 5) or 
+                           exec('raise ValidationError("Рейтинг от 1 до 5")'))
 
 quote_schema = QuoteSchema()
 quotes_schema = QuoteSchema(many=True)
