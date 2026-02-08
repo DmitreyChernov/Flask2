@@ -1,6 +1,8 @@
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).parent.parent.parent.resolve()
+
+print(f"basedir {BASE_DIR}")
 
 class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
