@@ -12,6 +12,6 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 ma = Marshmallow(app)
 
-from api.models import author, quote
+from api.models import author, quote, user
 db.configure_mappers()
-from api.handlers import author, quote
+from api.handlers import author, quote, user
