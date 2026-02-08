@@ -1,7 +1,5 @@
-# my_app/api/handlers/quote.py
-
 from flask import jsonify, request
-from api import app, db
+from api import app, db, auth
 from api.models.quote import QuoteModel
 from api.models.author import AuthorModel
 from api.schemas.quote import quote_schema, quotes_schema
@@ -10,12 +8,14 @@ import random
 
 
 @app.route("/quotes")
+@auth.login_required
 def get_quotes():
     quotes = db.session.scalars(db.select(QuoteModel)).all()
     return jsonify(quotes_schema.dump(quotes)), 200
 
 
 @app.route("/quotes/<int:id>")
+@auth.login_required
 def get_quote(id):
     quote = db.session.get(QuoteModel, id)
     if not quote:
@@ -24,12 +24,14 @@ def get_quote(id):
 
 
 @app.route("/quotes/count")
+@auth.login_required
 def quotes_count():
     count = db.session.scalar(db.select(db.func.count(QuoteModel.id)))
     return jsonify({"count": count}), 200
 
 
 @app.route("/quotes/random")
+@auth.login_required
 def random_quote():
     quotes = db.session.scalars(db.select(QuoteModel)).all()
     if not quotes:
@@ -38,12 +40,15 @@ def random_quote():
 
 
 @app.route("/quotes", methods=["POST"])
+@auth.login_required
 def create_quote():
     json_data = request.get_json()
+    print("name=", auth.current_user)
     if not json_data:
         return jsonify({"error": "Отсутствуют данные"}), 400
+    
 
-    # Валидация текста и автора вручную (пока автор — строка)
+    # Валидация текста
     author_name = json_data.get("author")
     text = json_data.get("text")
 
@@ -56,11 +61,11 @@ def create_quote():
     if not author_name or not text:
         return jsonify({"error": "Поля 'author' и 'text' не должны быть пустыми"}), 400
 
-    # Валидация rating через схему (остальные поля)
+    # Валидация rating через схему
     try:
         validated = quote_schema.load(
             {"text": text, "rating": json_data.get("rating", 1)},
-            partial=("author", "id")  # пропускаем author и id
+            partial=("author", "id")
         )
     except Exception as err:
         return jsonify({"error": str(err)}), 400
@@ -83,6 +88,7 @@ def create_quote():
 
 
 @app.route("/quotes/<int:id>", methods=["PUT"])
+@auth.login_required
 def edit_quote(id):
     quote = db.session.get(QuoteModel, id)
     if not quote:
@@ -133,7 +139,9 @@ def edit_quote(id):
 
 
 @app.route("/quotes/<int:id>", methods=["DELETE"])
+@auth.login_required
 def del_quote(id):
+    print("user=", auth.current_user())
     quote = db.session.get(QuoteModel, id)
     if not quote:
         return jsonify({"error": "Цитата не найдена"}), 404
@@ -196,6 +204,7 @@ def filter_quotes():
 
 
 @app.route("/author/<int:id>/quotes")
+@auth.login_required
 def get_author_quotes(id):
     au = db.session.get(AuthorModel, id)
     if not au:

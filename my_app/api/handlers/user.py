@@ -25,14 +25,10 @@ def create_user():
     json_data = request.get_json()
     if not json_data:
         return jsonify({"error": "No input data"}), 400
-
-    # Валидация и десериализация через Marshmallow
     try:
         user = user_schema.load(json_data)
     except Exception as err:
         return jsonify({"error": str(err)}), 400
-
     db.session.add(user)
     db.session.commit()
-
     return jsonify(user_schema.dump(user)), 201

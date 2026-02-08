@@ -1,5 +1,3 @@
-# my_app/api/handlers/author.py
-
 from flask import jsonify
 from api import app, db
 from api.models.author import AuthorModel
