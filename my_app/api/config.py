@@ -4,6 +4,7 @@ BASE_DIR = Path(__file__).parent.parent.resolve()
 
 class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SECRET_KEY = "super_key"
 
 class DevConfig(Config):
     DB_NAME = "quotes.db"

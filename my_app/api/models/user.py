@@ -1,9 +1,13 @@
-from flask import abort
+from flask import abort, current_app
 from passlib.apps import custom_app_context as pwd_context
 import sqlalchemy.orm as so
 from api import db
+from config import Config
 import sqlalchemy as sa
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+#from itsdangerous import URLSafeSerializer, BadSignature
+from time import time
+import jwt
 
 
 
@@ -43,3 +47,21 @@ class UserModel(db.Model):
             db.session.rollback()
             abort(503, f"Database error: {str(e)}")
     
+
+    def generate_auth_token(self):
+        token = jwt.encode(
+            {"id": self.id, "exp": int(time() + 60)},
+            key=current_app.config["SECRET_KEY"],
+            algorithm="HS256"
+        )
+        return token
+
+    @staticmethod
+    def verify_auth_token(token):
+        try:
+            data = jwt.decode(token, key=Config.SECRET_KEY, algorithms=["HS256"])
+        except Exception as e:
+            print(e)
+            return None  # invalid token
+        user = db.get_or_404(UserModel, data['id'], description=f"User with id={data['id']} not found")
+        return user
