@@ -25,14 +25,16 @@ def get_users():
 
 # url:  /users - POST
 @app.route("/users", methods=["POST"])
-def create_user():
+@app.input(UserSchema, arg_name="user")
+@app.output(UserSchema, status_code=201)
+@app.doc(summary="Create new user and save to db", description="Create new user and save to db", tags=["users"])
+def create_user(user):
     json_data = request.get_json()
-    if not json_data:
-        return jsonify({"error": "No input data"}), 400
+    #if not json_data:
+     #   return jsonify({"error": "No input data"}), 400
     try:
-        user = user_schema.load(json_data)
-    except Exception as err:
-        return jsonify({"error": str(err)}), 400
-    db.session.add(user)
-    db.session.commit()
-    return jsonify(user_schema.dump(user)), 201
+        user.save()
+        #user = user_schema.load(json_data)
+    except ValidationError as err:
+        abort(400, f"Validation error: {err.messages_dict}")
+    return user
