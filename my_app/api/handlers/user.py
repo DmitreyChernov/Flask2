@@ -7,29 +7,20 @@ from api.schemas.user import user_schema, UserSchema
 
 # url: /users/<int:user_id> - GET
 @app.get("/users/<int:user_id>")
+@app.output(UserSchema)
+@app.doc(summary="Get user by id", description="Get user by id", tags=["users"])
 def get_user_by_id(user_id: int):
-    """
-    Get_user_by_id
-    ---
-    tags:
-        - Users
-        
-    """
     user = db.get_or_404(UserModel, user_id, description="Пользователь не найден")
-    return jsonify(user_schema.dump(user)), 200
+    return user, 200
 
 
 # url: /users - GET
 @app.route("/users")
+@app.output(UserSchema(many=True))
+@app.doc(summary="Get all users", description="Get all users", tags=["users"])
 def get_users():
-    """
-    Get all Users
-    ---
-    tags:
-    - Users
-    """
     users = db.session.scalars(db.select(UserModel)).all()
-    return jsonify(user_schema.dump(users, many=True)), 200
+    return users, 200
 
 
 # url:  /users - POST

@@ -5,8 +5,7 @@ from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
 from api.config import DevConfig
-from flasgger import Swagger
-
+from apiflask import APIFlask
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -14,7 +13,8 @@ ma = Marshmallow()
 
 
 def create_app():
-    app = Flask(__name__)
+    app = APIFlask(__name__, title="Quote API", version="1.0")
+    app.tags = ["Quotes and Authors",]
     app.json.ensure_ascii = False
     app.config.from_object(DevConfig)
 
@@ -28,7 +28,7 @@ app = create_app()
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth("Bearer")
 multi_auth = MultiAuth(basic_auth, token_auth)
-swagger = Swagger(app)
+#swagger = Swagger(app)
 
 from api.models import author, quote, user
 db.configure_mappers()
