@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
 from api.config import DevConfig
+from flasgger import Swagger
 
 
 db = SQLAlchemy()
@@ -27,6 +28,7 @@ app = create_app()
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth("Bearer")
 multi_auth = MultiAuth(basic_auth, token_auth)
+swagger = Swagger(app)
 
 from api.models import author, quote, user
 db.configure_mappers()

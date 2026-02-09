@@ -8,6 +8,13 @@ from api.schemas.user import user_schema, UserSchema
 # url: /users/<int:user_id> - GET
 @app.get("/users/<int:user_id>")
 def get_user_by_id(user_id: int):
+    """
+    Get_user_by_id
+    ---
+    tags:
+        - Users
+        
+    """
     user = db.get_or_404(UserModel, user_id, description="Пользователь не найден")
     return jsonify(user_schema.dump(user)), 200
 
@@ -15,6 +22,12 @@ def get_user_by_id(user_id: int):
 # url: /users - GET
 @app.route("/users")
 def get_users():
+    """
+    Get all Users
+    ---
+    tags:
+    - Users
+    """
     users = db.session.scalars(db.select(UserModel)).all()
     return jsonify(user_schema.dump(users, many=True)), 200
 
