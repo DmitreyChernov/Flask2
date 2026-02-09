@@ -1,5 +1,5 @@
 from flask import jsonify
-from api import app, db
+from api import app, db #,admin@required
 from api.models.author import AuthorModel
 from api.schemas.author import authors_schema
 
@@ -17,6 +17,7 @@ def get_or_create_author(name: str) -> AuthorModel:
 
 
 @app.get("/authors")
+# @admin_required
 def get_authors():
     authors = db.session.scalars(db.select(AuthorModel)).all()
     return jsonify(authors_schema.dump(authors)), 200

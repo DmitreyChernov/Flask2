@@ -1,4 +1,5 @@
-from flask import Flask, g
+from functools import wraps
+from flask import Flask, abort, g
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
@@ -52,3 +53,13 @@ def verify_token(token):
     from api.models.user import UserModel
     user = UserModel.verify_auth_token(token)
     return user
+
+"""
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not getattr(g, 'user', None) or g.user.role != 'admin':
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated
+"""

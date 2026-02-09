@@ -17,6 +17,7 @@ class UserModel(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     username: so.Mapped[str] = so.mapped_column(sa.String(32), index=True, unique=True)
     password_hash: so.Mapped[str] = so.mapped_column(sa.String(128))
+    role = db.Column(db.String(10), default="user") 
 
     def __init__(self, username, password):
         self.username = username
