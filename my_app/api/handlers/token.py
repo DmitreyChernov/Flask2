@@ -1,13 +1,22 @@
-from flask import jsonify
-from api import app, db, basic_auth
-from api.models.user import UserModel
+from flask import abort
+from api import app, basic_auth
+from api.schemas.token import token_out
 
-
-@app.route('/auth/token')
-@basic_auth.login_required
+# ! Отлажено
+@app.get('/auth/token')
+@app.output(token_out)
+@app.doc(
+    summary="Получить токен аутентификации",
+    description="Генерирует Bearer токен для аутентификации по имени пользователя и паролю (Basic Auth)",
+    tags=["Authentication"]
+)
+@app.auth_required(basic_auth)
 def get_auth_token():
-    """ Получаем токен по имени и паролю"""
-    username = basic_auth.current_user()
-    user = db.one_or_404(db.select(UserModel).filter_by(username=username))
+    user = basic_auth.current_user()
+    
+    if not user:
+        abort(401, description="Не авторизован")
+    
     token = user.generate_auth_token()
-    return {"token": token}
+    print(str(token))
+    return {"access_token": token, "token_type": "bearer"}

@@ -4,6 +4,11 @@ from api.models.user import UserModel
 from marshmallow import validate, fields, post_load
 
 
+class UserInputSchema(ma.Schema):
+    username = ma.String(required=True)
+    password = ma.String(required=True)
+
+
 class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = UserModel
@@ -21,3 +26,4 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
 
 
 user_schema = UserSchema()
+user_input_schema = UserInputSchema()

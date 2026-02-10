@@ -1,40 +1,45 @@
-from flask import abort, jsonify, request
-from marshmallow import ValidationError
+from flask import abort
 from api import app, db
 from api.models.user import UserModel
-from api.schemas.user import user_schema, UserSchema
+from api.schemas.user import UserSchema, user_input_schema, user_schema
 
 
-# url: /users/<int:user_id> - GET
+# ! Отлажено
 @app.get("/users/<int:user_id>")
 @app.output(UserSchema)
-@app.doc(summary="Get user by id", description="Get user by id", tags=["users"])
+@app.doc(summary="Получить пользователя по ID", tags=["Users"])
 def get_user_by_id(user_id: int):
-    user = db.get_or_404(UserModel, user_id, description="Пользователь не найден")
-    return user, 200
+    user = db.session.get(UserModel, user_id)
+    if not user:
+        abort(404, description="Пользователь не найден")
+    return user
 
 
-# url: /users - GET
-@app.route("/users")
+# ! Отлажено
+@app.get("/users")
 @app.output(UserSchema(many=True))
-@app.doc(summary="Get all users", description="Get all users", tags=["users"])
+@app.doc(summary="Получить всех пользователей", tags=["Users"])
 def get_users():
     users = db.session.scalars(db.select(UserModel)).all()
-    return users, 200
+    return users
 
 
-# url:  /users - POST
-@app.route("/users", methods=["POST"])
-@app.input(UserSchema, arg_name="user")
-@app.output(UserSchema, status_code=201)
-@app.doc(summary="Create new user and save to db", description="Create new user and save to db", tags=["users"])
-def create_user(user):
-    json_data = request.get_json()
-    #if not json_data:
-     #   return jsonify({"error": "No input data"}), 400
+# ! Отлажено
+@app.post("/users")
+@app.input(user_input_schema, arg_name='data')
+@app.output(user_schema, status_code=201)
+@app.doc(summary="Создать нового пользователя", tags=["Users"])
+def create_user(data):
+    existing_user = db.session.scalar(
+        db.select(UserModel).where(UserModel.username == data["username"])
+    )
+    if existing_user:
+        abort(400, description="Пользователь с таким именем уже существует")
+    user = UserModel(username=data["username"])
+    user.hash_password(data["password"])
+    
     try:
         user.save()
-        #user = user_schema.load(json_data)
-    except ValidationError as err:
-        abort(400, f"Validation error: {err.messages_dict}")
-    return user
+        return user
+    except Exception as e:
+        abort(500, description=f"Ошибка при создании пользователя: {str(e)}")

@@ -18,6 +18,7 @@ email-validator==2.3.0
 flasgger==0.9.7.1
 Flask==3.1.2
 Flask-HTTPAuth==4.8.0
+Flask-Login==0.6.3
 flask-marshmallow==1.4.0
 Flask-Migrate==4.1.0
 flask-moreshell==0.1.5
